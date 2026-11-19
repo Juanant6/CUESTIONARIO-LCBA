@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La casa de Bernarda Alba · Práctica PAU</title>
+<style>
+:root{
+  --bg:#faf8f4;--card:#ffffff;--ink:#23201c;--muted:#6b645b;--line:#ddd6ca;
+  --accent:#8a1f2b;--accent-ink:#ffffff;--ok:#1f7a45;--okbg:#e4f4ea;--bad:#b3261e;--badbg:#fbe6e4;--quote:#f3ede2;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#161412;--card:#201d1a;--ink:#f1ece4;--muted:#a49b8f;--line:#3a352f;
+  --accent:#e0707c;--accent-ink:#1a1210;--ok:#6fd49a;--okbg:#17321f;--bad:#ff8a80;--badbg:#3a1a18;--quote:#2a2520;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 Georgia,"Times New Roman",serif}
+header{padding:20px 16px 8px;max-width:900px;margin:0 auto}
+h1{font-size:1.5rem;margin:0 0 4px}
+.sub{color:var(--muted);font-size:.95rem;margin:0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding:8px 12px}
+.navin{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.grp{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.grp span{font-size:.8rem;color:var(--muted);margin-right:2px}
+nav button{font:inherit;min-width:44px;min-height:44px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:0 12px;cursor:pointer}
+nav button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+nav button.done::after{content:" ✓";color:var(--ok)}
+nav button.on.done::after{color:var(--accent-ink)}
+main{max-width:900px;margin:0 auto;padding:12px 16px 60px}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:8px 0 16px}
+summary{cursor:pointer;font-weight:bold;min-height:36px;display:flex;align-items:center}
+details table{border-collapse:collapse;width:100%;margin:8px 0 14px;font-size:.92rem}
+details td,details th{border-top:1px solid var(--line);padding:5px 8px;text-align:left;vertical-align:top}
+details td:first-child{width:2.2rem;font-weight:bold;color:var(--accent)}
+h2{font-size:1.3rem;margin:18px 0 8px}
+.frag{background:var(--quote);border-left:4px solid var(--accent);border-radius:6px;padding:10px 16px;margin:8px 0 18px}
+.frag p{margin:6px 0}
+.ex{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:14px 0}
+.ex h3{margin:0 0 2px;font-size:1.05rem}
+.ex h3 em{color:var(--accent);font-style:normal}
+.hint{color:var(--muted);font-size:.9rem;margin:0 0 10px}
+.intro{margin:6px 0 10px;font-style:italic}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;padding:9px 10px;border-radius:10px;border:1px solid transparent;margin:4px 0}
+.row .lab{flex:1 1 280px}
+.row .ctl{flex:1 1 240px;display:flex;flex-direction:column;gap:6px}
+select{font:inherit;font-size:16px;width:100%;min-height:44px;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.row.ok{background:var(--okbg);border-color:var(--ok)}
+.row.bad{background:var(--badbg);border-color:var(--bad)}
+.sol{flex-basis:100%;font-size:.9rem;color:var(--bad)}
+.row.ok .sol{display:none}
+.note{font-size:.88rem;color:var(--muted)}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+.bar button{font:inherit;min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.bar button.main{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.score{font-weight:bold;margin-left:auto}
+.score.full{color:var(--ok)}
+.total{position:fixed;right:12px;bottom:12px;background:var(--accent);color:var(--accent-ink);padding:8px 14px;border-radius:999px;font:bold .95rem system-ui,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.pn{display:flex;justify-content:space-between;margin-top:20px}
+.pn button{font:inherit;min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <h1>La casa de Bernarda Alba · Práctica PAU</h1>
+  <p class="sub">Elige las opciones en cada ejercicio y pulsa «Comprobar». No hace falta redactar: se trabaja con palabras clave.</p>
+</header>
+<nav><div class="navin" id="nav"></div></nav>
+<main>
+  <details id="fichas"><summary>Fichas de referencia (temas, personajes, recursos y estructura)</summary><div id="fichasBody"></div></details>
+  <div id="view"></div>
+</main>
+<div class="total" id="total">0 / 0</div>
+
+<script>
+/* ---------- Fichas ---------- */
+var T=[["A","Autoridad frente a libertad"],["B","Situación y papel de la mujer"],["C","Diferencias sociales y orgullo de casta"],["D","Apariencias, «qué dirán» y honra"],["E","Odio y envidia"],["F","Amor, deseo sexual y búsqueda del varón"],["G","Frustración, encierro y destino trágico"],["H","Convencionalismo social y moral tradicional (luto, religión)"]];
+var F=[["A","Encarna el principio de autoridad y la moral tradicional"],["B","Encarna la rebeldía abierta y el deseo de libertad"],["C","Resentimiento, envidia y actitud turbia ante los hombres; hipócrita"],["D","Sumisión, resignación o falta de voz"],["E","Hija mayor y heredera: el matrimonio como escape, sin pasión"],["F","Sabiduría popular y odio contenido: confidente y contrafigura de Bernarda"],["G","Locura que dice la verdad: libertad, profecía y evasión"],["H","Personaje invisible o aludido: objeto de deseo y motor del conflicto"],["I","Personaje despersonalizado: jerarquía social e hipocresía de criadas y vecinas"],["J","Víctima de la moral: mujer marginada por vivir su sexualidad"],["K","Visita social: el mundo exterior que vigila (el «qué dirán»)"],["L","Coro simbólico: la libertad del mundo exterior"],["M","Aludido cuya muerte desencadena el conflicto (el luto)"]];
+var R=[["A","Acotación (gestos, sonidos, vestuario, tono de voz)"],["B","Lenguaje prescriptivo: órdenes, imperativos, prohibiciones"],["C","Infinitivo en lugar del imperativo (vulgarismo)"],["D","Exclamaciones, interrogaciones y frases cortas (realismo)"],["E","Registro coloquial: frases hechas, expresiones populares y del campo"],["F","Hipérbole"],["G","Comparación"],["H","Metáfora o imagen"],["I","Antítesis o contraste"],["J","Repetición, paralelismo o adjetivación abundante"],["K","Símbolo (casa, bastón, colores, agua, caballo, campanas…)"],["L","Verso o canción"]];
+var A1=[["A","Tragedia de la mujer infecunda: el amor frustrado se vuelve odio"],["B","Teatro poético en verso y de tema histórico, que exalta un pasado nostálgico"],["C","Esperpento: deformación grotesca de una realidad degradada"],["D","Primer triunfo de Lorca: verso y tratamiento romántico de un tema histórico"],["E","Pasión que desborda las barreras sociales y acaba en muerte; verso y prosa"],["F","Drama de la espera inútil del amor y de la frustración"],["G","Etapa surrealista de su producción dramática"],["H","Teatro poético con mayor hondura que el de sus contemporáneos"]];
+var BANK={T:T,F:F,R:R,A1:A1};
+var NAMES=["Bernarda","La Poncia","La Criada","Adela","Martirio","Angustias","Amelia","Magdalena","María Josefa","Prudencia","Pepe el Romano"];
+var ACTO=["I","II","III"];
+var TIEMPO=["Mañana, habitación blanquísima","Tarde, habitación interior blanca","Noche, patio interior de paredes blancas"];
+var FASE=["Calma inicial","Sucesión de conflictos","Violencia final"];
+
+/* ---------- Constructores de ejercicios ---------- */
+function mk(opts,ans,ph){return {opts:opts,ans:ans,ph:ph||"Elige…"};}
+function bankOpts(b){return BANK[b].map(function(x){return [x[0],x[0]+" — "+x[1]];});}
+function code(q,title,b,rows,hint){return {q:q,title:title,hint:hint||"Escribe la letra de la ficha que corresponde.",rows:rows.map(function(r){return {label:r[0],ctrls:[mk(bankOpts(b),[r[1]])]};})};}
+function vf(q,title,rows){return {q:q,title:title,hint:"Marca verdadero o falso. Las falsas, corrígelas mentalmente.",rows:rows.map(function(r){return {label:r[0],note:r[2]||"",ctrls:[mk([["V","Verdadero"],["F","Falso"]],[r[1]])]};})};}
+function who(q,title,rows){return {q:q,title:title,hint:"¿Quién es quién? Elige el personaje y su función.",rows:rows.map(function(r){return {label:r[0],ctrls:[mk(NAMES.map(function(n){return [n,n];}),[r[1]],"Personaje…"),mk(bankOpts("F"),[r[2]],"Función…")]};})};}
+function order(q,title,rows,hint){var n=rows.length,o=[];for(var i=1;i<=n;i++)o.push([String(i),String(i)]);return {q:q,title:title,hint:hint||("Numera del 1 al "+n+" según el orden en que ocurren."),rows:rows.map(function(r){return {label:r[0],ctrls:[mk(o,[String(r[1])],"Nº…")]};})};}
+function cls(q,title,rows){return {q:q,title:title,hint:"Clasifica el ejemplo (lenguaje dramático o valor poético) y elige el recurso.",rows:rows.map(function(r){return {label:r[0],ctrls:[mk([["D","Lenguaje dramático"],["P","Valor poético"]],[r[1]],"D / P…"),mk(bankOpts("R"),[r[2]],"Recurso…")]};})};}
+function sel(q,title,rows,o){o=o||{};return {q:q,title:title,hint:o.hint||"Elige la opción correcta.",intro:o.intro||"",rows:rows.map(function(r){var op=r[1].map(function(x){return [x,x];});return {label:r[0],ctrls:[mk(op,[].concat(r[2]))]};})};}
+function ficha(q,title,acto,tiempo,fase,extra){var rows=[["Acto",ACTO,acto],["Tiempo y espacio",TIEMPO,TIEMPO[tiempo]],["Fase del acto",FASE,FASE[fase]]];if(extra)rows.push(extra);return sel(q,title,rows,{hint:"Rellena la ficha de estructura."});}
+
+/* ---------- Datos ---------- */
+var LOC="Localiza en el fragmento el ejemplo de cada recurso.";
+var SETS=[];
+SETS.push({id:"p1",nav:"P1",act:"Bloque fijo",title:"Pregunta 1 · Autor, obra y contexto",frag:null,ex:[
+ code("A1","Une cada autor u obra con su rasgo","A1",[["Valle-Inclán: <i>Luces de bohemia</i> y <i>Divinas palabras</i>","C"],["Eduardo Marquina: <i>Las hijas del Cid</i>","B"],["Hermanos Machado: <i>La Lola se va a los puertos</i>","H"],["Lorca: <i>Mariana Pineda</i> (1925)","D"],["Lorca: <i>Bodas de sangre</i> (1933)","E"],["Lorca: <i>Yerma</i> (1934)","A"],["Lorca: <i>Doña Rosita la soltera</i> (1935)","F"],["Lorca: <i>Así que pasen cinco años</i> y <i>El público</i>","G"]],"Elige el rasgo que corresponde a cada autor u obra."),
+ order("A2","Ordena cronológicamente",[["<i>Bodas de sangre</i>",4],["Estreno de <i>La casa de Bernarda Alba</i> en Buenos Aires",8],["<i>Luces de bohemia</i>",1],["<i>Doña Rosita la soltera</i>",6],["<i>La casa de Bernarda Alba</i> (escritura)",7],["<i>Mariana Pineda</i>",2],["Primer estreno en un escenario español",9],["<i>Yerma</i>",5],["<i>Así que pasen cinco años</i>",3]]),
+ sel("A3","Completa la frase de arranque",[["Obra",["La casa de Bernarda Alba","Bodas de sangre","Yerma"],"La casa de Bernarda Alba"],["Año de escritura",["1931","1936","1945"],"1936"],["Autor",["Federico García Lorca","Ramón del Valle-Inclán","Antonio Machado"],"Federico García Lorca"],["Generación",["Generación del 27","Generación del 98"],"Generación del 27"],["Lugar del estreno",["Buenos Aires","Madrid","Granada"],"Buenos Aires"],["Año del estreno",["1936","1945","1964"],"1945"],["Subtítulo",["Drama de mujeres en los pueblos de España","Tragedia de la tierra y la sangre","Poema trágico de Andalucía"],"Drama de mujeres en los pueblos de España"]],{intro:"«El fragmento pertenece a ___, obra teatral escrita en ___ por ___, miembro de la ___. Se estrenó en ___ en ___, después de la muerte del autor. Su subtítulo es «___».»"}),
+ sel("A4","Clasifica las palabras clave",[["Teatro burgués",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Teatro que triunfa a principios de siglo"],["Teatro cómico",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Teatro que triunfa a principios de siglo"],["Drama histórico en verso",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Teatro que triunfa a principios de siglo"],["Teatro modernista",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Teatro que triunfa a principios de siglo"],["Esperpento",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Renovación del 98"],["Valle-Inclán",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Renovación del 98"],["Deformación grotesca",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Renovación del 98"],["Tragedias rurales",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Rasgos del teatro de Lorca"],["Mujer protagonista",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Rasgos del teatro de Lorca"],["Campo andaluz",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Rasgos del teatro de Lorca"],["Autoridad frente a libertad",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Rasgos del teatro de Lorca"],["Frustración y muerte",["Teatro que triunfa a principios de siglo","Renovación del 98","Rasgos del teatro de Lorca"],"Rasgos del teatro de Lorca"]])
+]});
+
+SETS.push({id:"s1",nav:"1",act:"Acto I",title:"Supuesto 1",frag:[
+"<b>BERNARDA.</b> Dame un abanico.",
+"<b>ADELA.</b> Tome usted. <i>(Le da un abanico redondo con flores rojas y verdes.)</i>",
+"<b>BERNARDA.</b> <i>(Arrojando el abanico al suelo.)</i> ¿Es éste el abanico que se da a una viuda? Dame uno negro y aprende a respetar el luto de tu padre.",
+"<b>MARTIRIO.</b> Tome usted el mío.",
+"<b>BERNARDA.</b> ¿Y tú?",
+"<b>MARTIRIO.</b> Yo no tengo calor.",
+"<b>BERNARDA.</b> Pues busca otro, que te hará falta. En ocho años que dure el luto no ha de entrar en esta casa el viento de la calle. Haceros cuenta que hemos tapiado con ladrillos puertas y ventanas. Así pasó en casa de mi padre y en casa de mi abuelo."],ex:[
+ code("P2","Temas","T",[["«un abanico redondo con flores rojas y verdes»","F"],["«Dame uno negro y aprende a respetar el luto de tu padre»","H"],["«no ha de entrar en esta casa el viento de la calle»","A"],["«hemos tapiado con ladrillos puertas y ventanas»","G"],["«Así pasó en casa de mi padre y en casa de mi abuelo»","C"]]),
+ code("P3","Personajes","F",[["Bernarda","A"],["Adela","B"],["Martirio","C"],["Antonio Benavides (aludido en «tu padre»)","M"]]),
+ ficha("P4","Estructura y argumento","I",0,1,["Hecho que desencadena todo el conflicto",["Muerte del padre","Boda de Angustias","Suicidio de Adela"],"Muerte del padre"]),
+ code("P5","Lenguaje dramático y valor poético","R",[["«Dame uno negro y aprende a respetar el luto de tu padre»","B"],["<i>(Arrojando el abanico al suelo.)</i>","A"],["«¿Es éste el abanico que se da a una viuda?»","D"],["«el viento de la calle»","K"],["«en casa de mi padre y en casa de mi abuelo»","J"]],"Elige el recurso de la ficha.")
+]});
+
+SETS.push({id:"s2",nav:"2",act:"Acto I",title:"Supuesto 2",frag:[
+"<b>CRIADA.</b> Ya tengo el doble de esas campanas metido entre las sienes.",
+"<b>PONCIA.</b> <i>(Sale comiendo chorizo y pan.)</i> Llevan ya más de dos horas de gori-gori. Han venido curas de todos los pueblos. La iglesia está hermosa. [...]",
+"<b>CRIADA.</b> Sangre en las manos tengo de fregarlo todo.",
+"<b>PONCIA.</b> Ella, la más aseada; ella, la más decente; ella, la más alta. [...] Es capaz de sentarse encima de tu corazón y ver cómo te mueres durante un año sin que se le cierre esa sonrisa fría que lleva en su maldita cara."],ex:[
+ vf("P2","Temas",[["El fragmento deja ver el odio de las criadas hacia el ama.","V"],["Bernarda interviene en la escena imponiendo su autoridad.","F","Bernarda no habla: solo hablan de ella."],["La Poncia cuestiona con ironía la imagen de decencia que cultiva Bernarda.","V"],["Se percibe la distancia entre el servicio y la señora de la casa.","V"],["El tema central del fragmento es el amor sensual de las hijas.","F","El tema es el odio y la distancia social."]]),
+ who("P3","Personajes",[["Sale comiendo chorizo y pan; habla de Bernarda con sabiduría rústica","La Poncia","F"],["No tiene nombre propio; se queja del trabajo y de las campanas","La Criada","I"],["No habla, pero ambas hablan de ella: «la más aseada, la más decente»","Bernarda","A"]]),
+ order("P4","Estructura y argumento",[["Al final del acto, María Josefa escapa y la vuelven a encerrar.",5],["Bernarda impone ocho años de luto.",3],["La Poncia y la Criada hablan mal de Bernarda mientras dura la misa.",1],["Magdalena anuncia la boda de Angustias con Pepe el Romano.",4],["Entra Bernarda con sus hijas y los vecinos y manda callar: «¡Silencio!»",2]],"Numera del 1 al 5 los hechos del acto en que aparece este fragmento."),
+ cls("P5","Lenguaje dramático y valor poético",[["<i>(Sale comiendo chorizo y pan.)</i>","D","A"],["«gori-gori»","D","E"],["«Ella, la más aseada; ella, la más decente; ella, la más alta»","P","J"],["«Sangre en las manos tengo de fregarlo todo»","P","F"],["«esa sonrisa fría»","P","H"]])
+]});
+
+var Q3=["«Hilo y aguja para las hembras. Látigo y mula para el varón.»","«Aquí se hace lo que yo mando.»","«Malditas sean las mujeres.»","«Prefiero llevar sacos al molino»","«ir con el cuento a tu padre»","«hilo y aguja»","«Sé que yo no me voy a casar»"];
+SETS.push({id:"s3",nav:"3",act:"Acto I",title:"Supuesto 3",frag:[
+"<b>MAGDALENA.</b> [...] Sé que yo no me voy a casar. Prefiero llevar sacos al molino. [...]",
+"<b>BERNARDA.</b> Eso tiene el ser mujer.",
+"<b>MAGDALENA.</b> Malditas sean las mujeres.",
+"<b>BERNARDA.</b> Aquí se hace lo que yo mando. Ya no puedes ir con el cuento a tu padre. Hilo y aguja para las hembras. Látigo y mula para el varón. Eso tiene el haber nacido con posibles."],ex:[
+ code("P2","Temas","T",[["«Sé que yo no me voy a casar»","F"],["«Prefiero llevar sacos al molino»","G"],["«Aquí se hace lo que yo mando»","A"],["«Hilo y aguja para las hembras. Látigo y mula para el varón»","B"],["«Eso tiene el haber nacido con posibles»","C"]]),
+ code("P3","Personajes","F",[["Bernarda","A"],["Magdalena","D"],["Antonio Benavides (aludido en «tu padre»)","M"]]),
+ sel("P4","Estructura y argumento",[["Acto",ACTO,"I"],["Momento del día",["Mañana","Tarde","Noche"],"Mañana"],["Espacio",["Habitación blanquísima","Patio interior","Habitación interior blanca"],"Habitación blanquísima"],["Fase del acto",FASE,"Sucesión de conflictos"],["Poco antes, Bernarda ha impuesto… años de luto",["Ocho","Tres","Cinco"],"Ocho"],["Al final del acto aparece… gritando que quiere casarse",["María Josefa","Angustias","Prudencia","La Poncia"],"María Josefa"]],{intro:"Completa: este fragmento pertenece al acto ___, por la ___, en una ___; fase ___.",hint:"Completa los huecos."}),
+ sel("P5","Lenguaje dramático y valor poético",[["Paralelismo con antítesis",Q3,Q3[0]],["Lenguaje prescriptivo (una orden o afirmación de autoridad)",Q3,Q3[1]],["Imprecación (exclamación)",Q3,Q3[2]],["Expresión coloquial o popular",Q3,[Q3[3],Q3[4]]],["Símbolo de la condición femenina",Q3,Q3[5]]],{hint:LOC})
+]});
+
+SETS.push({id:"s4",nav:"4",act:"Acto I",title:"Supuesto 4",frag:[
+"<b>ADELA.</b> Pienso que este luto me ha cogido en la peor época de mi vida para pasarlo. [...] No, no me acostumbraré. Yo no quiero estar encerrada. ¡No quiero que se me pongan las carnes como a vosotras! ¡No quiero perder mi blancura en estas habitaciones! Mañana me pondré mi vestido verde y me echaré a pasear por la calle. ¡Yo quiero salir!"],ex:[
+ code("P2","Temas","T",[["«este luto me ha cogido en la peor época de mi vida»","G"],["«Yo no quiero estar encerrada»","A"],["«¡No quiero que se me pongan las carnes como a vosotras!»","F"],["«Mañana me pondré mi vestido verde» (en pleno luto)","H"],["«me echaré a pasear por la calle»","B"]]),
+ code("P3","Personajes","F",[["Adela","B"],["Las hermanas a las que se dirige: «vosotras»","D"],["Bernarda (aludida: es quien impone el luto)","A"]]),
+ ficha("P4","Estructura y argumento","I",0,1,["¿Qué dos hechos abren y cierran la obra?",["Muerte del padre y muerte de la hija (Adela)","Boda de Angustias y muerte de Bernarda","Llegada de Pepe y marcha de Pepe"],"Muerte del padre y muerte de la hija (Adela)"]),
+ cls("P5","Lenguaje dramático y valor poético",[["«¡Yo quiero salir!»","D","D"],["«vestido verde»","P","K"],["«¡No quiero perder mi blancura en estas habitaciones!»","P","K"],["«No quiero [...] No quiero [...] No quiero»","P","J"],["«como a vosotras»","P","G"]])
+]});
+
+var Q5=["«por encima de mi madre saltaría»","«este fuego que tengo levantado por piernas y boca»","«Nadie podrá evitar lo que tiene que suceder»","«bebo su sangre lentamente»","«ti que eres una criada»","«Mirando sus ojos»"];
+SETS.push({id:"s5",nav:"5",act:"Acto II",title:"Supuesto 5",frag:[
+"<i>Adela responde a la Poncia, que la ha advertido sobre Pepe.</i>",
+"<b>ADELA.</b> [...] Nadie podrá evitar lo que tiene que suceder. [...] No por encima de ti que eres una criada, por encima de mi madre saltaría para apagarme este fuego que tengo levantado por piernas y boca. [...] Mirando sus ojos me parece que bebo su sangre lentamente."],ex:[
+ vf("P2","Temas",[["Adela expresa su deseo con imágenes de fuego y de sangre.","V"],["Adela acepta la autoridad de Bernarda y las normas sociales.","F","Adela las desafía abiertamente."],["Adela desafía tanto las diferencias sociales como la autoridad de su madre.","V"],["El fragmento anuncia un desenlace trágico.","V"],["El tema central del fragmento es la hipocresía de Martirio.","F","El tema es la pasión y la rebeldía de Adela."]]),
+ code("P3","Personajes","F",[["Adela","B"],["La Poncia (la interlocutora)","F"],["Pepe el Romano (aludido en «sus ojos»)","H"],["Bernarda (aludida en «mi madre»)","A"]]),
+ order("P4","Estructura y argumento",[["Aparece el retrato de Pepe en la cama de Martirio.",3],["La Poncia advierte a Bernarda: «Aquí pasa una cosa muy grande».",4],["Bullicio fuera: quieren linchar a la hija de la Librada.",5],["Pasan los segadores cantando.",2],["Adela se enfrenta a la Poncia, que lo sabe todo.",1]],"Numera del 1 al 5 los hechos del acto en que aparece este fragmento."),
+ sel("P5","Lenguaje dramático y valor poético",[["Hipérbole",Q5,Q5[0]],["Metáfora del deseo",Q5,Q5[1]],["Presagio del desenlace",Q5,Q5[2]],["Imagen sensual",Q5,Q5[3]],["Expresión que marca la diferencia de clase",Q5,Q5[4]]],{hint:LOC})
+]});
+
+SETS.push({id:"s6",nav:"6",act:"Acto II",title:"Supuesto 6",frag:[
+"<b>MARTIRIO.</b> Es preferible no ver a un hombre nunca. Desde niña les tuve miedo.",
+"[...]",
+"<b>AMELIA.</b> Nacer mujer es el mayor castigo.",
+"<b>MAGDALENA.</b> Ni nuestros ojos siquiera nos pertenecen."],ex:[
+ vf("P2","Temas",[["Las hermanas muestran conciencia de su condición de mujeres oprimidas.","V"],["Domina la rebeldía abierta de Adela.","F","Adela no aparece."],["El fragmento enlaza con el tema de la frustración vital y amorosa.","V"],["Predomina un tono de resignación.","V"],["Se habla de las diferencias sociales entre criadas y señoras.","F"]]),
+ code("P3","Personajes","F",[["Martirio","C"],["Amelia","D"],["Magdalena","D"],["Los hombres (aludidos)","H"]]),
+ sel("P4","Estructura y argumento",[["Acto",ACTO,"II"],["Momento del día",["Mañana","Tarde","Noche"],"Tarde"],["Espacio",["Habitación blanquísima","Patio interior","Habitación interior blanca"],"Habitación interior blanca"],["Fase del acto (mujeres cosiendo y hablando de hombres)",FASE,"Calma inicial"],["Más adelante avisará a Bernarda: «Aquí pasa una cosa muy grande»",["La Poncia","Angustias","Prudencia"],"La Poncia"]],{intro:"Completa los datos de ubicación del fragmento.",hint:"Completa los huecos."}),
+ code("P5","Lenguaje dramático y valor poético","R",[["«Nacer mujer es el mayor castigo»","F"],["«Ni nuestros ojos siquiera nos pertenecen»","H"],["«Desde niña les tuve miedo»","D"],["Las tres intervenciones repiten la misma idea de privación","J"]],"Elige el recurso de la ficha.")
+]});
+
+SETS.push({id:"s7",nav:"7",act:"Acto II",title:"Supuesto 7",frag:[
+"<b>PONCIA.</b> [...] Y ahora la quieren matar. La traen arrastrando por la calle abajo, y por los caminos y los olivares bajan los hombres corriendo, dando unas voces que estremecen los campos.",
+"<b>BERNARDA.</b> Sí, que vengan todos con varas de olivo y mangos de azadones, que vengan todos para matarla.",
+"<b>ADELA.</b> ¡No, para matarla no!",
+"<b>MARTIRIO.</b> Sí, y vamos a salir también nosotras.",
+"<b>BERNARDA.</b> Y que pague la que pisotea la decencia.",
+"<i>(Fuera se oye un grito de mujer y un gran rumor.)</i>",
+"<b>MARTIRIO.</b> <i>(Mirando a Adela.)</i> ¡Que pague lo que debe!",
+"<b>BERNARDA.</b> <i>(Bajo el arco.)</i> ¡Acabad con ella antes de que lleguen los guardias! ¡Carbón ardiendo en el sitio de su pecado!",
+"<b>ADELA.</b> <i>(Cogiéndose el vientre.)</i> ¡No! ¡No!",
+"<b>BERNARDA.</b> ¡Matadla! ¡Matadla!"],ex:[
+ code("P2","Temas","T",[["«Que pague la que pisotea la decencia»","D"],["«¡Que pague lo que debe!» (Martirio, mirando a Adela)","E"],["«¡Carbón ardiendo en el sitio de su pecado!»","H"],["«¡No, para matarla no!» (Adela)","B"],["«¡Matadla! ¡Matadla!»","G"]]),
+ code("P3","Personajes","F",[["Bernarda","A"],["Adela","B"],["Martirio","C"],["La Poncia","F"],["La hija de la Librada (no aparece)","J"]]),
+ ficha("P4","Estructura y argumento","II",1,2,["Función estructural de la historia de la hija de la Librada",["Historia secundaria y presagio del destino de Adela","Calma inicial","Cierre circular"],"Historia secundaria y presagio del destino de Adela"]),
+ cls("P5","Lenguaje dramático y valor poético",[["<i>(Fuera se oye un grito de mujer y un gran rumor.)</i>","D","A"],["«¡Matadla! ¡Matadla!»","D","B"],["«¡Carbón ardiendo en el sitio de su pecado!»","P","H"],["«dando unas voces que estremecen los campos»","P","F"],["«varas de olivo y mangos de azadones»","D","E"]])
+]});
+
+var Q8=["«perlas» (= lágrimas)","«En mi tiempo [...] ya las cosas han cambiado»","«Yo creo que no.»","«Las cosas siguen significando lo mismo»","«Los anillos de pedida deben ser diamantes»"];
+SETS.push({id:"s8",nav:"8",act:"Acto III",title:"Supuesto 8",frag:[
+"<i>Prudencia visita a Bernarda y contempla el anillo de pedida de Angustias.</i>",
+"<b>PRUDENCIA.</b> Es precioso. Tres perlas. En mi tiempo las perlas significaban lágrimas.",
+"<b>ANGUSTIAS.</b> Pero ya las cosas han cambiado.",
+"<b>ADELA.</b> Yo creo que no. Las cosas siguen significando lo mismo. Los anillos de pedida deben ser diamantes."],ex:[
+ vf("P2","Temas",[["La visita de Prudencia representa el mundo exterior, regido por las convenciones sociales.","V"],["La frase sobre las perlas funciona como presagio del desenlace trágico.","V"],["El fragmento muestra el odio de Adela hacia su madre.","F"],["Angustias y Adela tienen visiones distintas del matrimonio.","V"],["El tema central del fragmento es la locura de María Josefa.","F"]]),
+ code("P3","Personajes","F",[["Prudencia","K"],["Angustias","E"],["Adela","B"],["Pepe el Romano (aludido: es quien da el anillo)","H"]]),
+ order("P4","Estructura y argumento",[["Adela rompe el bastón de Bernarda.",5],["María Josefa sale con una oveja en los brazos.",3],["Visita de Prudencia y anillo de perlas.",1],["Adela se suicida y Bernarda ordena «¡Silencio!»",6],["La Poncia advierte a Bernarda: «A lo mejor de pronto cae un rayo».",2],["Se oye el silbido de Pepe y Martirio llama a voces a Bernarda.",4]],"Numera del 1 al 6 los hechos del acto en que aparece este fragmento."),
+ sel("P5","Lenguaje dramático y valor poético",[["Símbolo",Q8,Q8[0]],["Antítesis entre dos tiempos",Q8,Q8[1]],["Frase corta de réplica (realismo)",Q8,Q8[2]],["Sentencia generalizadora",Q8,Q8[3]]],{hint:LOC})
+]});
+
+SETS.push({id:"s9",nav:"9",act:"Acto III",title:"Supuesto 9",frag:[
+"<i>(Sale María Josefa con una oveja en los brazos.)</i>",
+"<b>MARÍA JOSEFA.</b> [...] Pepe el Romano es un gigante. Todas lo queréis. Pero él os va a devorar, porque vosotras sois como granos de trigo. No granos de trigo, no. ¡Ranas sin lengua!"],ex:[
+ code("P2","Temas","T",[["«Pepe el Romano es un gigante»","F"],["«Todas lo queréis»","E"],["«él os va a devorar»","G"],["«¡Ranas sin lengua!»","B"]]),
+ code("P3","Personajes","F",[["María Josefa","G"],["Pepe el Romano (aludido)","H"],["Las hijas de Bernarda («vosotras»)","D"]]),
+ ficha("P4","Estructura y argumento","III",2,1,["Función de esta intervención en la estructura",["Presagio del desenlace","Cierre circular","Historia secundaria sin relación"],"Presagio del desenlace"]),
+ code("P5","Lenguaje dramático y valor poético","R",[["«Pepe el Romano es un gigante»","F"],["«sois como granos de trigo»","G"],["«No granos de trigo, no.»","J"],["«¡Ranas sin lengua!»","H"],["La oveja que lleva en los brazos","K"]],"Elige el recurso de la ficha.")
+]});
+
+var Q10=["«una fuerza tan mala, que [...] a mí misma me ahoga»","«estos techos»","«He visto la muerte [...] he salido a buscar lo que era mío»"];
+SETS.push({id:"s10",nav:"10",act:"Acto III",title:"Supuesto 10",frag:[
+"<i>Adela y Martirio se enfrentan en el corral.</i>",
+"<b>ADELA.</b> He visto la muerte debajo de estos techos y he salido a buscar lo que era mío.",
+"[...]",
+"<b>MARTIRIO.</b> Tengo el corazón lleno de una fuerza tan mala, que sin quererlo yo, a mí misma me ahoga."],ex:[
+ code("P2","Temas","T",[["«He visto la muerte debajo de estos techos»","G"],["«he salido a buscar lo que era mío»","F"],["«Tengo el corazón lleno de una fuerza tan mala»","E"]]),
+ who("P3","Personajes",[["La más joven; desafía abiertamente la moral establecida","Adela","B"],["Su resentimiento y su amor secreto la llevan a traicionar a su hermana","Martirio","C"],["No aparece, pero es la causa de la disputa","Pepe el Romano","H"]]),
+ order("P4","Estructura y argumento",[["Se oye el silbido de Pepe el Romano.",4],["Martirio llama a voces a Bernarda.",5],["Adela bebe agua y sale hacia el corral.",1],["Martirio sigue a Adela.",2],["Discusión: Martirio confiesa que ama a Pepe.",3]],"Numera del 1 al 5 los hechos de la escena nocturna."),
+ sel("P5","Lenguaje dramático y valor poético",[["Metáfora o imagen del odio",Q10,Q10[0]],["Símbolo de la casa como encierro",Q10,Q10[1]],["Antítesis entre muerte y vida",Q10,Q10[2]]],{hint:LOC})
+]});
+
+SETS.push({id:"s11",nav:"11",act:"Acto III",title:"Supuesto 11",frag:[
+"<b>ADELA.</b> <i>(Haciendo frente.)</i> ¡Aquí se acabaron las voces de presidio! <i>(Adela arrebata un bastón a su madre y lo parte en dos.)</i> Esto hago yo con la vara de la dominadora. No dé usted un paso más. ¡En mí no manda nadie más que Pepe!"],ex:[
+ vf("P2","Temas",[["El bastón es símbolo de la autoridad de Bernarda.","V"],["Con su gesto, Adela rechaza el principio de autoridad y afirma el de libertad.","V"],["Adela se somete finalmente a su madre.","F"],["El amor sensual aparece como motor de la rebeldía.","V"],["El fragmento trata de las diferencias de clase entre criadas y señoras.","F"]]),
+ code("P3","Personajes","F",[["Adela","B"],["Bernarda (a quien arrebata el bastón)","A"],["Pepe el Romano (aludido)","H"]]),
+ sel("P4","Estructura y argumento",[["Acto",ACTO,"III"],["Momento del día",["Mañana","Tarde","Noche"],"Noche"],["Espacio",["Habitación blanquísima","Patio interior","Habitación interior blanca"],"Patio interior"],["Fase del acto",FASE,"Violencia final"],["Poco después, Bernarda… con la escopeta",["dispara","huye","se casa"],"dispara"],["Martirio miente («Se acabó Pepe el Romano») y Adela…",["se suicida","se casa","huye"],"se suicida"]],{intro:"Completa los datos de ubicación y lo que ocurre a continuación.",hint:"Completa los huecos."}),
+ code("P5","Lenguaje dramático y valor poético","R",[["<i>(Adela arrebata un bastón a su madre y lo parte en dos.)</i>","A"],["«voces de presidio»","H"],["«la vara de la dominadora»","K"],["«No dé usted un paso más»","B"],["«¡En mí no manda nadie más que Pepe!»","D"]],"Elige el recurso de la ficha.")
+]});
+
+SETS.push({id:"s12",nav:"12",act:"Acto III",title:"Supuesto 12",frag:[
+"<b>BERNARDA.</b> [...] ¡Llevadla a su cuarto y vestidla como si fuera doncella! ¡Nadie dirá nada! ¡Ella ha muerto virgen! Avisad para que al amanecer den dos clamores las campanas. [...] Y no quiero llantos. La muerte hay que mirarla cara a cara. ¡Silencio! <i>(A una hija.)</i> ¡A llorar al agua! [...] Nos hundiremos todas en un mar de luto. [...] ¡Silencio, silencio he dicho! ¡Silencio!"],ex:[
+ code("P2","Temas","T",[["«¡Nadie dirá nada!»","D"],["«Ella ha muerto virgen»","B"],["«¡Silencio!»","A"],["«Nos hundiremos todas en un mar de luto»","G"],["«al amanecer den dos clamores las campanas»","H"]]),
+ code("P3","Personajes","F",[["Bernarda","A"],["Adela (aludida en «ella»)","B"],["Las hijas (destinatarias del silencio)","D"]]),
+ ficha("P4","Estructura y argumento","III",2,2,["Rasgos que cierran la estructura circular",["«¡Silencio!», campanas y muerte","Calor, abanico y bastón","Luto, perlas y caballo"],"«¡Silencio!», campanas y muerte"]),
+ cls("P5","Lenguaje dramático y valor poético",[["«¡Silencio!»","D","B"],["<i>(A una hija.)</i>","D","A"],["«Nos hundiremos todas en un mar de luto»","P","H"],["«Ella ha muerto virgen»","D","D"],["«al amanecer den dos clamores las campanas»","P","K"]])
+]});
+
+/* ---------- Utilidades ---------- */
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function tableHtml(title,rows){var h="<p><b>"+title+"</b></p><table>";rows.forEach(function(r){h+="<tr><td>"+r[0]+"</td><td>"+r[1]+"</td></tr>";});return h+"</table>";}
+document.getElementById("fichasBody").innerHTML=
+  tableHtml("Temas (pregunta 2)",T)+tableHtml("Función de los personajes (pregunta 3)",F)+tableHtml("Recursos (pregunta 5)",R)+
+  "<p><b>Ficha de estructura (pregunta 4)</b></p><table><tr><td>Acto</td><td>I (planteamiento) · II (nudo) · III (desenlace)</td></tr><tr><td>Tiempo</td><td>Mañana, habitación blanquísima · Tarde, habitación interior blanca · Noche, patio interior de paredes blancas</td></tr><tr><td>Fase</td><td>Calma inicial · Sucesión de conflictos · Violencia final</td></tr><tr><td>Circular</td><td>«¡Silencio!» primera y última palabra · campanas · muerte del padre / de la hija · calor · blanco y negro</td></tr></table>";
+
+/* ---------- Estado ---------- */
+var state={}; /* id -> {checked:bool, score, max} por ejercicio: state[setId+q] */
+var current="p1";
+
+function exKey(s,e){return s.id+"-"+e.q;}
+
+function render(id){
+  current=id;
+  var s=SETS.filter(function(x){return x.id===id;})[0]||SETS[0];
+  current=s.id;
+  var h="<h2>"+s.title+(s.act!=="Bloque fijo"?" <span class='note'>· ejercicios de las preguntas 2 a 5</span>":"")+"</h2>";
+  if(s.frag){h+="<div class='frag'>"+s.frag.map(function(l){return "<p>"+l+"</p>";}).join("")+"</div>";}
+  s.ex.forEach(function(e,ei){
+    h+="<section class='ex' data-ex='"+ei+"'><h3><em>"+e.q+"</em> · "+e.title+"</h3><p class='hint'>"+e.hint+"</p>";
+    if(e.intro)h+="<p class='intro'>"+e.intro+"</p>";
+    e.rows.forEach(function(r,ri){
+      /* mezclar opciones solo en ejercicios de localizar y A1 */
+      h+="<div class='row' data-r='"+ri+"'><div class='lab'>"+r.label+(r.note?"":"")+"</div><div class='ctl'>";
+      r.ctrls.forEach(function(c,ci){
+        var opts=c.shuf?c.shuf:c.opts;
+        h+="<select data-c='"+ci+"' aria-label='Respuesta'><option value=''>"+esc(c.ph)+"</option>"+opts.map(function(o){return "<option value='"+esc(o[0])+"'>"+esc(o[1])+"</option>";}).join("")+"</select>";
+      });
+      h+="</div><div class='sol'></div></div>";
+    });
+    h+="<div class='bar'><button class='main' data-act='check'>Comprobar</button><button data-act='show'>Ver solución</button><button data-act='reset'>Borrar</button><span class='score'></span></div></section>";
+  });
+  var idx=SETS.indexOf(s);
+  h+="<div class='pn'><button "+(idx===0?"disabled style='opacity:.4'":"data-go='"+SETS[idx-1].id+"'")+">← Anterior</button><button "+(idx===SETS.length-1?"disabled style='opacity:.4'":"data-go='"+SETS[idx+1].id+"'")+">Siguiente →</button></div>";
+  var v=document.getElementById("view");v.innerHTML=h;
+  /* restaurar estado de comprobaciones previas */
+  s.ex.forEach(function(e,ei){var st=state[exKey(s,e)];if(st&&st.vals){var sec=v.querySelectorAll(".ex")[ei];var sels=sec.querySelectorAll("select");st.vals.forEach(function(val,i){if(sels[i])sels[i].value=val;});if(st.checked)check(s,ei,sec,true);}});
+  navUpdate();
+  try{history.replaceState(null,"","#"+s.id);}catch(_){try{location.hash=s.id;}catch(__){}}
+  window.scrollTo(0,0);
+}
+
+function labelOf(c,val){for(var i=0;i<c.opts.length;i++)if(c.opts[i][0]===val)return c.opts[i][1];return val;}
+
+function check(s,ei,sec,silent){
+  var e=s.ex[ei];var rows=sec.querySelectorAll(".row");var ok=0;
+  e.rows.forEach(function(r,ri){
+    var row=rows[ri];var sels=row.querySelectorAll("select");var good=true;var sol=[];
+    r.ctrls.forEach(function(c,ci){
+      var v=sels[ci].value;
+      if(c.ans.indexOf(v)===-1)good=false;
+      sol.push(labelOf(c,c.ans[0]));
+    });
+    row.className="row "+(good?"ok":"bad");
+    var note=r.note&&!good?" "+esc(r.note):"";
+    row.querySelector(".sol").innerHTML=good?"":"Solución: "+esc(sol.join(" · "))+note;
+    if(good)ok++;
+  });
+  var sc=sec.querySelector(".score");sc.textContent=ok+" / "+e.rows.length;sc.className="score"+(ok===e.rows.length?" full":"");
+  saveVals(s,ei,sec,true,ok,e.rows.length);
+}
+function saveVals(s,ei,sec,checked,ok,max){
+  var e=s.ex[ei];var vals=[].map.call(sec.querySelectorAll("select"),function(x){return x.value;});
+  state[exKey(s,e)]={vals:vals,checked:checked,score:ok||0,max:max||e.rows.length};
+  totals();navUpdate();
+}
+function totals(){
+  var ok=0,max=0;
+  SETS.forEach(function(s){s.ex.forEach(function(e){var st=state[exKey(s,e)];max+=e.rows.length;if(st&&st.checked)ok+=st.score;});});
+  document.getElementById("total").textContent="Aciertos: "+ok+" / "+max;
+}
+function navUpdate(){
+  [].forEach.call(document.querySelectorAll("#nav button"),function(b){
+    var id=b.getAttribute("data-id");var s=SETS.filter(function(x){return x.id===id;})[0];
+    b.className=(id===current?"on":"")+(complete(s)?" done":"");
+  });
+}
+function complete(s){return s.ex.every(function(e){var st=state[exKey(s,e)];return st&&st.checked&&st.score===e.rows.length;});}
+
+/* ---------- Eventos ---------- */
+document.getElementById("view").addEventListener("click",function(ev){
+  var t=ev.target;
+  var go=t.getAttribute&&t.getAttribute("data-go");
+  if(go){render(go);return;}
+  var act=t.getAttribute&&t.getAttribute("data-act");if(!act)return;
+  var sec=t.closest(".ex");var ei=+sec.getAttribute("data-ex");
+  var s=SETS.filter(function(x){return x.id===current;})[0];var e=s.ex[ei];
+  if(act==="check"){check(s,ei,sec);}
+  if(act==="show"){
+    var rows=sec.querySelectorAll(".row");
+    e.rows.forEach(function(r,ri){var sels=rows[ri].querySelectorAll("select");r.ctrls.forEach(function(c,ci){sels[ci].value=c.ans[0];});});
+    check(s,ei,sec);
+  }
+  if(act==="reset"){
+    [].forEach.call(sec.querySelectorAll("select"),function(x){x.value="";});
+    [].forEach.call(sec.querySelectorAll(".row"),function(r){r.className="row";r.querySelector(".sol").innerHTML="";});
+    sec.querySelector(".score").textContent="";
+    delete state[exKey(s,e)];totals();navUpdate();
+  }
+});
+document.getElementById("view").addEventListener("change",function(ev){
+  var sec=ev.target.closest&&ev.target.closest(".ex");if(!sec)return;
+  var s=SETS.filter(function(x){return x.id===current;})[0];var ei=+sec.getAttribute("data-ex");
+  var row=ev.target.closest(".row");row.className="row";row.querySelector(".sol").innerHTML="";
+  var st=state[exKey(s,s.ex[ei])];
+  saveVals(s,ei,sec,false);
+  sec.querySelector(".score").textContent="";
+});
+
+/* ---------- Navegación ---------- */
+(function buildNav(){
+  var nav=document.getElementById("nav");var groups=[];
+  SETS.forEach(function(s){var g=groups[groups.length-1];if(!g||g.name!==s.act){g={name:s.act,items:[]};groups.push(g);}g.items.push(s);});
+  nav.innerHTML=groups.map(function(g){return "<div class='grp'><span>"+(g.name==="Bloque fijo"?"Fijo":g.name)+"</span>"+g.items.map(function(s){return "<button data-id='"+s.id+"'>"+s.nav+"</button>";}).join("")+"</div>";}).join("");
+  nav.addEventListener("click",function(ev){var id=ev.target.getAttribute&&ev.target.getAttribute("data-id");if(id)render(id);});
+})();
+/* mezclar opciones de los ejercicios de localizar y de A1 una sola vez */
+SETS.forEach(function(s){s.ex.forEach(function(e){if(e.q==="P5"&&e.rows[0].ctrls[0].opts.length>5&&e.title&&e.rows.every(function(r){return r.ctrls[0].opts===undefined||true;})){}});});
+SETS.forEach(function(s){s.ex.forEach(function(e){var isLoc=(e.hint===LOC);if(isLoc||e.q==="A1"){e.rows.forEach(function(r){r.ctrls.forEach(function(c){c.shuf=shuffle(c.opts);});});}});});
+window.addEventListener("hashchange",function(){var h=location.hash.replace("#","");if(h&&h!==current)render(h);});
+render(location.hash.replace("#","")||"p1");
+totals();
+</script>
+</body>
+</html>
